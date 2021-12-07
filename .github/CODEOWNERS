@@ -1,0 +1,11 @@
+# DevOps OpenHack main code owners
+@PrasadSudama @talksoft999    
+
+
+# In this example, any change inside the `/apps` directory
+# will require approval from @doctocat.
+
+/apis/poi  @talksoft999   
+/apis/trips @akshay-pande
+/apis/user-java  @PrasadSudama
+/apis/userprofile @newfunda
