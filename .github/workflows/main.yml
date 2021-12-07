@@ -26,5 +26,6 @@ jobs:
     - name: npm install and build
       run: |
         cd apis/userprofile
+        npm config set registry https://registry.npmjs.org/
         npm install
         npm run build
