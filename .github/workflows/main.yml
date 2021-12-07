@@ -28,4 +28,4 @@ jobs:
         cd apis/userprofile
         npm config set registry https://registry.npmjs.org/
         npm install
-        npm run build
+        npm run test
