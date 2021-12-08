@@ -3,6 +3,8 @@ name: trips-image CI
 on:
 #   push:
 #     branches: [ main ]
+#     paths:
+#     - 'apis/trips/**'
     workflow_dispatch
 
 jobs:
@@ -13,12 +15,24 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: azure/docker-login@v1 
+    - uses: azure/docker-login@v1
       with: 
         login-server: openhackgr65e605acr.azurecr.io
         username: ${{ secrets.ACR_USERNAME }} 
         password: ${{ secrets.ACR_PASSWORD }} 
+        
     - run: |
             cd ${{ github.workspace }}/apis/trips
             docker build . -t openhackgr65e605acr.azurecr.io/devopsoh/api-trips:${{ github.sha }} 
             docker push openhackgr65e605acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}
+  deploy:
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    if: ${{success() && github.ref == 'refs/heads/main'}}
+    steps:
+    - uses: azure/webapps-deploy@v2
+      with:
+          app-name: 'openhackgr65e605trips'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_TRIPS }}
+          images: 'openhackgr65e605acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}'
