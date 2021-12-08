@@ -3,7 +3,10 @@ name: poi-image CI
 on:
 #   push:
 #     branches: [ main ]
+#       paths:
+#       - 'apis/poi/**' 
  workflow_dispatch
+ 
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,7 +21,6 @@ jobs:
             cd ${{ github.workspace }}/apis/poi/web
             docker build . -t openhackgr65e605acr.azurecr.io/devopsoh/api-poi:${{ github.sha }} 
             docker push openhackgr65e605acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}
-
   deploy:
     needs:
     - build
