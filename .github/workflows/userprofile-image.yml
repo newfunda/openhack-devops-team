@@ -1,4 +1,4 @@
-name: userprofile-image CI
+name: BUILD AND DEPLOY USERPROFILE
 
 on:
 #   push:
