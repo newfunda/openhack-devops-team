@@ -1,4 +1,4 @@
-name: Docker poi-image CI
+name: poi-image CI
 
 on:
 #   push:
