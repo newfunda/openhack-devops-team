@@ -1,4 +1,4 @@
-name: trips-image CI
+name: BUILD AND DEPLOY TRIPS
 
 on:
 #   push:
