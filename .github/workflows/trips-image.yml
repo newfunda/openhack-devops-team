@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: trips-image CI
 
 on:
 #   push:
