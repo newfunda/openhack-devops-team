@@ -1,0 +1,24 @@
+name: Docker Image CI
+
+on:
+#   push:
+#     branches: [ main ]
+    workflow_dispatch
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: azure/docker-login@v1 
+      with: 
+        login-server: openhackgr65e605acr.azurecr.io
+        username: ${{ secrets.ACR_USERNAME }} 
+        password: ${{ secrets.ACR_PASSWORD }} 
+    - run: |
+            cd ${{ github.workspace }}/apis/trips
+            docker build . -t openhackgr65e605acr.azurecr.io/devopsoh/api-trips:${{ github.sha }} 
+            docker push openhackgr65e605acr.azurecr.io/devopsoh/api-trips:${{ github.sha }}
