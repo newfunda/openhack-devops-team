@@ -1,12 +1,17 @@
-name: userjava-image CI
+name: BUILD AND DEPLOY USERJAVA
 
 on:
 #   push:
 #     branches: [ main ]
+#     paths:
+#         - 'apis/user-java/**'
   workflow_dispatch
 jobs:
+
   build:
+
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v2
     - uses: azure/docker-login@v1 
@@ -18,3 +23,14 @@ jobs:
             cd ${{ github.workspace }}/apis/user-java
             docker build . -t openhackgr65e605acr.azurecr.io/devopsoh/api-user-java:${{ github.sha }} 
             docker push openhackgr65e605acr.azurecr.io/devopsoh/api-user-java:${{ github.sha }}
+  deploy:
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    if: ${{success() && github.ref == 'refs/heads/main'}}
+    steps:
+    - uses: azure/webapps-deploy@v2
+      with:
+          app-name: 'openhackgr65e605userjava'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE_USERJAVA }}
+          images: 'openhackgr65e605acr.azurecr.io/devopsoh/api-user-java:${{ github.sha }}'
