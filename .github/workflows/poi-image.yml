@@ -1,4 +1,4 @@
-name: poi-image CI
+name: BUILD AND DEPLOY POI
 
 on:
 #   push:
