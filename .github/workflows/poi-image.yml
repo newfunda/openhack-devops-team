@@ -32,3 +32,23 @@ jobs:
           app-name: 'openhackgr65e605poi'
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           images: 'openhackgr65e605acr.azurecr.io/devopsoh/api-poi:${{ github.sha }}'
+    - name: Login via Az module
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+        enable-AzPSSession: true
+    - run: |
+          $poiResponse = Invoke-RestMethod -Method Get -Uri 'https://openhackgr65e605poi-staging.azurewebsites.net/api/healthcheck/poi'
+          if($poiResponse.status -eq 'Healthy')
+          {
+            Install-Module -Name Az.Websites -Scope CurrentUser -AllowClobber -Repository PSGallery -Force
+            Install-Module -Name Az.Accounts -Scope CurrentUser -AllowClobber -Repository PSGallery -Force
+            Import-Module -Name Az.Websites
+            Import-Module -Name Az.Accounts
+            Set-AzContext -SubscriptionId ${{ secrets.SUB_ID }}
+            Switch-AzWebAppSlot -SourceSlotName 'staging' -DestinationSlotName 'PRODUCTION' -ResourceGroupName 'openhackgr65e605rg' -Name 'openhackgr65e605poi'
+          }
+          else{
+            write-output "API is not healthy and could not be deployed to Production."
+          }
+      shell: pwsh
