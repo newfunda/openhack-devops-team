@@ -38,17 +38,26 @@ jobs:
         creds: ${{secrets.AZURE_CREDENTIALS}}
         enable-AzPSSession: true
     - run: |
+          Install-Module -Name Az.Websites -Scope CurrentUser -AllowClobber -Repository PSGallery -Force
+          Install-Module -Name Az.Accounts -Scope CurrentUser -AllowClobber -Repository PSGallery -Force
+          Import-Module -Name Az.Websites
+          Import-Module -Name Az.Accounts
+          
           $poiResponse = Invoke-RestMethod -Method Get -Uri 'https://openhackgr65e605poi-staging.azurewebsites.net/api/healthcheck/poi'
           if($poiResponse.status -eq 'Healthy')
           {
-            Install-Module -Name Az.Websites -Scope CurrentUser -AllowClobber -Repository PSGallery -Force
-            Install-Module -Name Az.Accounts -Scope CurrentUser -AllowClobber -Repository PSGallery -Force
-            Import-Module -Name Az.Websites
-            Import-Module -Name Az.Accounts
             Set-AzContext -SubscriptionId ${{ secrets.SUB_ID }}
             Switch-AzWebAppSlot -SourceSlotName 'staging' -DestinationSlotName 'PRODUCTION' -ResourceGroupName 'openhackgr65e605rg' -Name 'openhackgr65e605poi'
           }
           else{
-            write-output "API is not healthy and could not be deployed to Production."
+            Write-Output "API is not healthy and could not be deployed to Production."
           }
+          
+          $poiResponse = Invoke-RestMethod -Method Get -Uri 'https://openhackgr65e605poi.azurewebsites.net/api/healthcheck/poi'
+          if($poiResponse.status -ne 'Healthy') {            
+            Set-AzContext -SubscriptionId ${{ secrets.SUB_ID }}
+            Switch-AzWebAppSlot -SourceSlotName 'PRODUCTION' -DestinationSlotName 'staging' -ResourceGroupName 'openhackgr65e605rg' -Name 'openhackgr65e605poi'            
+          } 
+          Write-Output "API is $($poiResponse.status)"
+          
       shell: pwsh
